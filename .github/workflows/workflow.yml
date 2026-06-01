@@ -15,6 +15,21 @@ jobs:
     name: Build and Test Backend
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: palpita_ae_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,3 +43,7 @@ jobs:
 
       - name: Build and test
         run: mvn clean test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/palpita_ae_db
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: admin
