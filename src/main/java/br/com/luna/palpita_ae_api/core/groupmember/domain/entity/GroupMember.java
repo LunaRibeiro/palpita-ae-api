@@ -1,7 +1,7 @@
-package br.com.luna.palpita_ae_api.core.groupmember;
+package br.com.luna.palpita_ae_api.core.groupmember.domain.entity;
 
-import br.com.luna.palpita_ae_api.core.predictiongroup.entity.PredictionGroup;
-import br.com.luna.palpita_ae_api.core.profile.entity.Profile;
+import br.com.luna.palpita_ae_api.core.predictiongroup.domain.entity.PredictionGroup;
+import br.com.luna.palpita_ae_api.core.profile.domain.entity.Profile;
 import br.com.luna.palpita_ae_api.core.role.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

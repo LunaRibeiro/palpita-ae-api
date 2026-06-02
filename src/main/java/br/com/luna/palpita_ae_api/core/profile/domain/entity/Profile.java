@@ -1,4 +1,4 @@
-package br.com.luna.palpita_ae_api.core.profile.entity;
+package br.com.luna.palpita_ae_api.core.profile.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

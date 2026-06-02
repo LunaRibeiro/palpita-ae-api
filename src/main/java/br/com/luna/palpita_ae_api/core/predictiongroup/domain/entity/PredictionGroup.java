@@ -1,6 +1,6 @@
-package br.com.luna.palpita_ae_api.core.predictiongroup.entity;
+package br.com.luna.palpita_ae_api.core.predictiongroup.domain.entity;
 
-import br.com.luna.palpita_ae_api.core.profile.entity.Profile;
+import br.com.luna.palpita_ae_api.core.profile.domain.entity.Profile;
 import jakarta.persistence.*;
 import lombok.*;
 
