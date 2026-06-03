@@ -11,9 +11,9 @@ import br.com.luna.palpita.ae.api.core.groupmember.mapper.GroupMemberCreateMappe
 import br.com.luna.palpita.ae.api.core.groupmember.mapper.GroupMemberDTOMapper;
 import br.com.luna.palpita.ae.api.core.groupmember.mapper.GroupMemberUpdateMapper;
 import br.com.luna.palpita.ae.api.core.groupmember.repository.GroupMemberRepository;
+import br.com.luna.palpita.ae.api.core.groupmember.specification.GroupMemberSpecification;
 import br.com.luna.palpita.ae.api.core.predictiongroup.domain.entity.PredictionGroup;
 import br.com.luna.palpita.ae.api.core.profile.domain.entity.Profile;
-import br.com.luna.palpita.ae.api.core.profile.specification.ProfileSpecification;
 import br.com.luna.palpita.ae.api.core.role.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,8 +36,8 @@ public class GroupMemberService {
         return groupMemberCreateMapper.convert(groupMemberFormDTO, profile, predictionGroup);
     }
 
-    public GroupMember save (GroupMember groupMember) {
-        return groupMemberRepository.save(groupMember);
+    public void save (GroupMember groupMember) {
+        groupMemberRepository.save(groupMember);
     }
 
     public GroupMemberDTO generateGroupMemberDTO(GroupMember groupMember) {
@@ -68,13 +68,13 @@ public class GroupMemberService {
     }
 
     private Specification<GroupMember> generateSpecification(GroupMemberFilterDTO groupMemberFilterDTO) {
-        SearchCriteria<Long> groupIdCriteria = SpecificationHelper.generateEqualsCriteria("predictionGroup.id", groupMemberFilterDTO.groupId());
+        SearchCriteria<Long> groupIdCriteria = SpecificationHelper.generateEqualsCriteria("group.id", groupMemberFilterDTO.groupId());
         SearchCriteria<Long> profileIdCriteria = SpecificationHelper.generateEqualsCriteria("profile.id", groupMemberFilterDTO.profileId());
         SearchCriteria<Role> roleCriteria = SpecificationHelper.generateEqualsCriteria("role", groupMemberFilterDTO.role());
 
-        Specification<GroupMember> groupIdSpecification = new ProfileSpecification(groupIdCriteria);
-        Specification<GroupMember> profileIdSpecification = new ProfileSpecification(profileIdCriteria);
-        Specification<GroupMember> roleSpecification = new ProfileSpecification(roleCriteria);
+        Specification<GroupMember> groupIdSpecification = new GroupMemberSpecification(groupIdCriteria);
+        Specification<GroupMember> profileIdSpecification = new GroupMemberSpecification(profileIdCriteria);
+        Specification<GroupMember> roleSpecification = new GroupMemberSpecification(roleCriteria);
 
         return Specification.where(groupIdSpecification)
                 .and(profileIdSpecification)
@@ -93,5 +93,23 @@ public class GroupMemberService {
         return groupMemberRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("GroupMember", id)
         );
+    }
+
+    public boolean existsMember(Long groupId, Long profileId, Long id) {
+
+        SearchCriteria<Long> groupCriteria = SpecificationHelper.generateEqualsCriteria("group.id", groupId);
+        SearchCriteria<Long> profileCriteria = SpecificationHelper.generateEqualsCriteria("profile.id", profileId);
+
+        Specification<GroupMember> groupSpecification = new GroupMemberSpecification(groupCriteria);
+        Specification<GroupMember> profileSpecification = new GroupMemberSpecification(profileCriteria);
+
+        Specification<GroupMember> idSpecification = SpecificationHelper.generateIdNotSpecification(id);
+
+        Specification<GroupMember> specification =
+                groupSpecification
+                        .and(profileSpecification)
+                        .and(idSpecification);
+
+        return groupMemberRepository.exists(specification);
     }
 }

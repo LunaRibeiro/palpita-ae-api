@@ -34,8 +34,8 @@ public class PredictionGroupService {
         return predictionGroupCreateMapper.convert(predictionGroupFormDTO, profile);
     }
 
-    public PredictionGroup save (PredictionGroup predictionGroup) {
-        return predictionGroupRepository.save(predictionGroup);
+    public void save (PredictionGroup predictionGroup) {
+        predictionGroupRepository.save(predictionGroup);
     }
 
     public PredictionGroupDTO generatePredictionGroupDTO(PredictionGroup predictionGroup) {
@@ -67,7 +67,7 @@ public class PredictionGroupService {
 
     private Specification<PredictionGroup> generateSpecification(PredictionGroupFilterDTO predictionGroupFilterDTO) {
         SearchCriteria<String> nameCriteria = SpecificationHelper.generateInnerLikeCriteria("name", predictionGroupFilterDTO.name());
-        SearchCriteria<Long> ownerIdCriteria = SpecificationHelper.generateEqualsCriteria("profile.id", predictionGroupFilterDTO.ownerId());
+        SearchCriteria<Long> ownerIdCriteria = SpecificationHelper.generateEqualsCriteria("owner.id", predictionGroupFilterDTO.ownerId());
 
         Specification<PredictionGroup> nameSpecification = new PredictionGroupSpecification(nameCriteria);
         Specification<PredictionGroup> ownerIdSpecification = new PredictionGroupSpecification(ownerIdCriteria);
@@ -88,5 +88,31 @@ public class PredictionGroupService {
         return predictionGroupRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("PredictionGroup", id)
         );
+    }
+
+    public boolean existsByName(Long id, String name) {
+
+        SearchCriteria<String> nameCriteria = SpecificationHelper.generateEqualsCaseInsensitiveCriteria("name", name);
+
+        Specification<PredictionGroup> nameSpecification = new PredictionGroupSpecification(nameCriteria);
+
+        Specification<PredictionGroup> idSpecification = SpecificationHelper.generateIdNotSpecification(id);
+        Specification<PredictionGroup> specification = nameSpecification.and(idSpecification);
+
+        return predictionGroupRepository.exists(specification);
+    }
+
+    public boolean existsByInviteCode(Long id, String inviteCode) {
+
+        SearchCriteria<String> inviteCodeCriteria = SpecificationHelper.generateEqualsCaseInsensitiveCriteria("inviteCode", inviteCode);
+
+        Specification<PredictionGroup> inviteCodeSpecification = new PredictionGroupSpecification(inviteCodeCriteria);
+
+        Specification<PredictionGroup> idSpecification = SpecificationHelper.generateIdNotSpecification(id);
+
+        Specification<PredictionGroup> specification =
+                inviteCodeSpecification.and(idSpecification);
+
+        return predictionGroupRepository.exists(specification);
     }
 }

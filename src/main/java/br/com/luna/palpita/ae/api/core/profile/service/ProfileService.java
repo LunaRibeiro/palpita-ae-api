@@ -33,8 +33,8 @@ public class ProfileService {
         return profileCreateMapper.convert(profileFormDTO);
     }
 
-    public Profile save (Profile profile) {
-        return profileRepository.save(profile);
+    public void save (Profile profile) {
+        profileRepository.save(profile);
     }
 
     public ProfileDTO generateProfileDTO(Profile profile) {
@@ -87,5 +87,31 @@ public class ProfileService {
         return profileRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Profile", id)
         );
+    }
+
+    public boolean existsByEmail(Long id, String email) {
+
+        SearchCriteria<String> emailCriteria = SpecificationHelper.generateEqualsCaseInsensitiveCriteria("email", email);
+
+        Specification<Profile> emailSpecification = new ProfileSpecification(emailCriteria);
+
+        Specification<Profile> idSpecification = SpecificationHelper.generateIdNotSpecification(id);
+
+        Specification<Profile> specification = emailSpecification.and(idSpecification);
+
+        return profileRepository.exists(specification);
+    }
+
+    public boolean existsByNickname(Long id, String nickname) {
+
+        SearchCriteria<String> nicknameCriteria = SpecificationHelper.generateEqualsCaseInsensitiveCriteria("nickname", nickname);
+
+        Specification<Profile> nicknameSpecification = new ProfileSpecification(nicknameCriteria);
+
+        Specification<Profile> idSpecification = SpecificationHelper.generateIdNotSpecification(id);
+
+        Specification<Profile> specification = nicknameSpecification.and(idSpecification);
+
+        return profileRepository.exists(specification);
     }
 }
